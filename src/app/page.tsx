@@ -9,7 +9,7 @@ export default function Home() {
 
   useEffect(() => {
     const checkAuthorization = async () => {
-      if (!(await bcrypt.compare(process.env.NEXT_PUBLIC_ADMIN_PIN, (localStorage.getItem('encrypted_pin') || '')))) {
+      if (!(await bcrypt.compare(process.env.NEXT_PUBLIC_ADMIN_PIN || '', (localStorage.getItem('encrypted_pin') || 'encrypted_pin')))) {
         router.push('/locked');
       }
     }

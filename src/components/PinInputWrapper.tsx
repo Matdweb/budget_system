@@ -1,6 +1,6 @@
 'use client'
 import { useToast, HStack, PinInput, PinInputField } from '@chakra-ui/react';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import bcrypt from 'bcryptjs';
 import { useRouter } from 'next/navigation';
 
