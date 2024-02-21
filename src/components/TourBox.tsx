@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import { Heading } from "@chakra-ui/react";
+import 'animate.css';
 
 type randomRGB = {
     r: number,
@@ -27,7 +28,7 @@ function TourBox() {
 
     return (
         <div
-            className='min-w-64 w-full h-28 mt-12 flex justify-between items-center flex-row rounded-lg active:scale-95 transition-all duration-75 cursor-pointer select-none group'
+            className='min-w-64 w-full h-28 mt-12 flex justify-between items-center flex-row rounded-lg active:scale-95 transition-all duration-75 cursor-pointer select-none group animate__animated animate__slideInLeft'
             style={{ boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px' }}
         >
             <Heading as='h3' size='2xl' className='pl-4'>
