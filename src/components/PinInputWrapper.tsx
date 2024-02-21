@@ -27,9 +27,9 @@ function PinInputWrapper() {
     useEffect(() => {
         if (pin.length > 3) {
             toast.promise(handleCompleted(), {
-                success: { title: '¡Todo listo!', description: 'Acceso autorizado' },
-                error: { title: 'Hubo un error :(', description: 'Pin incorrecto' },
-                loading: { title: 'Analizando...', description: '¿Eres tu?' },
+                success: { title: '¡Todo listo!', description: 'Acceso autorizado', variant: 'subtle' },
+                error: { title: 'Hubo un error :(', description: 'Pin incorrecto', variant: 'subtle' },
+                loading: { title: 'Analizando...', description: '¿Eres tu?',variant: 'subtle' },
             })
         }
 
