@@ -14,6 +14,8 @@ import {
     useToast
 } from '@chakra-ui/react'
 import { useState, useRef, useEffect } from 'react';
+import type { Tour } from '@/types/Tour';
+import { createNewTour } from '@/lib/mongoDB/createNewTour';
 import 'animate.css'
 
 interface Props {
@@ -28,14 +30,15 @@ type question = {
     property: string
 }
 
-type Tour = {
-    id: number,
-    name: string,
-    duration: number,
-    budget: number[]
-}
-
 function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
+
+    const tourInitialState = {
+        id: '0',
+        name: '',
+        duration: 0,
+        budget: [],
+        expenses: []
+    }
 
     const questionsInitialState = [
         {
@@ -53,50 +56,48 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
     ];
     const [questions, setQuestions] = useState<question[]>(questionsInitialState);
     const [currentQuestion, setCurrentQuestion] = useState<question>(questions[0]);
-    const [tour, setTour] = useState<Tour>(
-        {
-            id: 0,
-            name: '',
-            duration: 0,
-            budget: []
-        }
-    );
+    const [tour, setTour] = useState<Tour>(tourInitialState);
     const input = useRef<null | HTMLInputElement>(null);
 
     const [animationClass, setAnimationClass] = useState<string>('');
     const toast = useToast();
 
     const handleNext = () => {
-        const property = currentQuestion.property;
-        const inputValue = input.current && input.current.value || '';
+        try {
+            const property = currentQuestion.property;
+            const inputValue = input.current && input.current.value || '';
 
-        if (inputValue) {
-            handleNextAnimation();
-        } else {
-            handleErrorAnimation();
-            handleInputError();
-            return;
-        }
+            if (inputValue) {
+                handleNextAnimation();
+            } else {
+                handleErrorAnimation();
+                handleInputError();
+                return;
+            }
 
-        if (property === 'budget') {
-            const budget = tour.budget;
-            budget[currentQuestion.id - 2] = parseInt(inputValue);
-            setTour({
-                ...tour,
-                budget
-            });
-        } else {
-            setTour({
-                ...tour,
-                [property]: inputValue
-            });
-        }
-        //resets value
-        input.current ? input.current.value = '' : '';
+            if (property === 'budget') {
+                const budget = tour.budget;
+                budget[currentQuestion.id - 2] = parseInt(inputValue);
+                setTour({
+                    ...tour,
+                    budget
+                });
+            } else {
+                setTour({
+                    ...tour,
+                    [property]: inputValue
+                });
+            }
+            //resets value
+            input.current ? input.current.value = '' : '';
 
-        //will ask for the budget based on quantity of days
-        if (currentQuestion.id === 1) {
-            addBudgetQuestions(parseInt(inputValue));
+            //will ask for the budget based on quantity of days
+            if (currentQuestion.id === 1) {
+                addBudgetQuestions(parseInt(inputValue));
+            }
+        } catch (e) {
+            console.log(e);
+            handleClose();
         }
     }
 
@@ -175,56 +176,91 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
         });
     }
 
-    const handleClose = () => {
+    const handleClose = async () => {
         onClose();
-        handleToast()
+        showLoadingToast();
 
+        //sends the new tour to DB
+        if (tour === tourInitialState) {
+            showErrorToast();
+        }
+        const status = await createNewTour(tour);
+        console.log(status);
+        if (status === 201) {
+            showSuccessToast();
+        } else {
+            showErrorToast();
+        }
+    }
+
+    const handleResetValues = () => {
         setCurrentQuestion(questions[0]);
         setQuestions(questionsInitialState);
         setTour({
-            id: 0,
+            id: '0',
             name: '',
             duration: 0,
-            budget: []
+            budget: [],
+            expenses: []
         });
-
     }
 
-    const handleToast = () => {
-        if (currentQuestion.id === questions[questions.length - 1].id) {
-            toast({
-                title: 'Nueva gira registrada.',
-                description: "La gira " + tour.name + " ha sido creada",
-                variant: 'subtle',
-                status: 'success',
-                duration: 4000,
-                isClosable: true,
-            });
-        } else {
-            toast({
-                title: 'Hubo un error al crear la gira.',
-                description: "Lo sentimos, no se pudo registrar la gira",
-                variant: 'subtle',
-                status: 'error',
-                duration: 4000,
-                isClosable: true,
-            });
+    const showLoadingToast = () => {
+        toast({
+            id: 'loading_toast',
+            title: 'Registrando nueva gira ...',
+            description: "Esto tomará un segundo",
+            variant: 'subtle',
+            status: 'loading',
+        });
+    }
+
+    const removeLoadingToast = () => {
+        if (toast.isActive('loading_toast')) {
+            toast.close('loading_toast');
         }
+        handleResetValues();
+    }
+
+    const showSuccessToast = () => {
+        removeLoadingToast();
+        toast({
+            title: 'Nueva gira registrada.',
+            description: "La gira " + tour.name + " ha sido creada",
+            variant: 'subtle',
+            status: 'success',
+            duration: 4000,
+            isClosable: true,
+        });
+    }
+
+    const showErrorToast = () => {
+        removeLoadingToast();
+        toast({
+            title: 'Hubo un error al crear la gira.',
+            description: "Lo sentimos, no se pudo registrar la gira",
+            variant: 'subtle',
+            status: 'error',
+            duration: 4000,
+            isClosable: true,
+        });
     }
 
     useEffect(() => {
         console.log(tour);
-        console.log(questions);
     }, [tour]);
 
     useEffect(() => {
         if (tour.name) {
-            const nextQuestion = currentQuestion.id + 1;
-            if (nextQuestion >= questions.length) {
-                handleClose();
-            } else {
-                setCurrentQuestion(questions[currentQuestion.id + 1])
+            const handleNextOrClose = async () => {
+                const nextQuestion = currentQuestion.id + 1;
+                if (nextQuestion >= questions.length) {
+                    await handleClose();
+                } else {
+                    setCurrentQuestion(questions[currentQuestion.id + 1])
+                }
             }
+            handleNextOrClose();
         }
 
     }, [tour, questions]);
