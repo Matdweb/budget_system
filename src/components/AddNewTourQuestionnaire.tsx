@@ -77,7 +77,7 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
 
             if (property === 'budget') {
                 const budget = tour.budget;
-                budget[currentQuestion.id - 2] = parseInt(inputValue);
+                budget[currentQuestion.id - 2] = parseFloat(inputValue);
                 setTour({
                     ...tour,
                     budget
