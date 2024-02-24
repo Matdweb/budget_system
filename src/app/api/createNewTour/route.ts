@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
         return Response.json(
             {
-                status: 201,
+                status: 200,
                 statusText: 'Tour creation succesful'
             }
         );

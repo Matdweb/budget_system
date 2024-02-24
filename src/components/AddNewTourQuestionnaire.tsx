@@ -186,7 +186,7 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
         }
         const status = await createNewTour(tour);
         console.log(status);
-        if (status === 201) {
+        if (status === 200) {
             showSuccessToast();
         } else {
             showErrorToast();
