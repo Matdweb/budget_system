@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ChakraProvidersWrapper } from '../components/providers/ChakraProvidersWrapper'
+import { ChakraProvidersWrapper } from '../components/providers/ChakraProvidersWrapper';
+import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthorizationProvider from "@/components/providers/AuthorizationProvider";
 import "./globals.css";
 
@@ -18,14 +19,16 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ChakraProvidersWrapper>
-          <AuthorizationProvider>
-            {children}
-          </AuthorizationProvider>
-        </ChakraProvidersWrapper>
-      </body>
-    </html>
+    <ReduxProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <ChakraProvidersWrapper>
+            <AuthorizationProvider>
+              {children}
+            </AuthorizationProvider>
+          </ChakraProvidersWrapper>
+        </body>
+      </html>
+    </ReduxProvider>
   );
 }
