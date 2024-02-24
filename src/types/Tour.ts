@@ -1,7 +1,12 @@
 export type Tour = {
-    id: string,
+    _id: string,
     name: string,
     duration: number,
     budget: number[],
-    expenses: number[]
+    expenses: number[],
+    background: {
+        r: number,
+        g: number,
+        b: number
+    }
 }
