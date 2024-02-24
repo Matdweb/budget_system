@@ -17,6 +17,17 @@ export const tourSchema = new Schema({
     expenses: {
         type: [Number],
         required: true
+    },
+    background: {
+        r: {
+            type: Number,
+        },
+        g: {
+            type: Number
+        },
+        b: {
+            type: Number
+        }
     }
 });
 
