@@ -15,7 +15,8 @@ import {
 } from '@chakra-ui/react'
 import { useState, useRef, useEffect } from 'react';
 import type { Tour } from '@/types/Tour';
-import { createNewTour } from '@/lib/mongoDB/createNewTour';
+import { useAppDispatch } from '@/redux/hooks';
+import { createNewTour } from '@/redux/features/toursSlice';
 import 'animate.css'
 
 interface Props {
@@ -32,12 +33,17 @@ type question = {
 
 function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
 
-    const tourInitialState = {
-        id: '0',
+    const tourInitialState: Tour = {
+        _id: '0',
         name: '',
         duration: 0,
         budget: [],
-        expenses: []
+        expenses: [],
+        background: {
+            r: 0,
+            g: 0,
+            b: 0
+        }
     }
 
     const questionsInitialState = [
@@ -61,6 +67,7 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
 
     const [animationClass, setAnimationClass] = useState<string>('');
     const toast = useToast();
+    const dispatch = useAppDispatch();
 
     const handleNext = () => {
         try {
@@ -184,9 +191,8 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
         if (tour === tourInitialState) {
             showErrorToast();
         }
-        const status = await createNewTour(tour);
-        console.log(status);
-        if (status === 200) {
+        const newTour = await dispatch(createNewTour(tour));
+        if (newTour) {
             showSuccessToast();
         } else {
             showErrorToast();
@@ -196,13 +202,7 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
     const handleResetValues = () => {
         setCurrentQuestion(questions[0]);
         setQuestions(questionsInitialState);
-        setTour({
-            id: '0',
-            name: '',
-            duration: 0,
-            budget: [],
-            expenses: []
-        });
+        setTour(tourInitialState);
     }
 
     const showLoadingToast = () => {
@@ -245,10 +245,6 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
             isClosable: true,
         });
     }
-
-    useEffect(() => {
-        console.log(tour);
-    }, [tour]);
 
     useEffect(() => {
         if (tour.name) {
