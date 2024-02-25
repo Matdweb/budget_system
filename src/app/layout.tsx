@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { ChakraProvidersWrapper } from '../components/providers/ChakraProvidersWrapper';
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthorizationProvider from "@/components/providers/AuthorizationProvider";
+import FetchToursWrapper from "@/components/providers/FetchToursWrapper";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,7 +25,9 @@ export default function RootLayout({
         <body className={inter.className}>
           <ChakraProvidersWrapper>
             <AuthorizationProvider>
-              {children}
+              <FetchToursWrapper>
+                {children}
+              </FetchToursWrapper>
             </AuthorizationProvider>
           </ChakraProvidersWrapper>
         </body>
