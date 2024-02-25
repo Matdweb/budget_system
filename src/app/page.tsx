@@ -2,20 +2,13 @@
 import AmerikVentureHeader from "@/components/AmerikVentureHeader";
 import TourBox from "@/components/TourBox";
 import AddNewTourFooter from "@/components/AddNewTourFooter";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { fetchTours } from "@/redux/features/toursSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { Heading } from "@chakra-ui/react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Home() {
-  const dispatch = useAppDispatch();
   const tours = useAppSelector(state => state.toursReducer.tours);
   const isLoading = useAppSelector(state => state.toursReducer.isLoading);
-
-  useEffect(() => {
-    dispatch(fetchTours());
-  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-5 pb-32">
