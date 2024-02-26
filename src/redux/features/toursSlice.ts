@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { Tour } from "@/types/Tour";
+import { tourInitialState } from "@/lib/TourInitialState";
 
 type initialState = {
     isLoading: boolean,
@@ -33,6 +34,9 @@ export const fetchTours = createAsyncThunk('tours/fecthTours',
 export const createNewTour = createAsyncThunk('tours/createNewTour',
     async (tour: Tour) => {
         try {
+            if (tour === tourInitialState) {
+                return null;
+            }
             const response = await fetch('./api/createNewTour', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
