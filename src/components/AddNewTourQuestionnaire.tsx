@@ -17,6 +17,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { Tour } from '@/types/Tour';
 import { useAppDispatch } from '@/redux/hooks';
 import { createNewTour } from '@/redux/features/toursSlice';
+import { tourInitialState } from '@/lib/TourInitialState';
 import 'animate.css'
 
 interface Props {
@@ -32,19 +33,6 @@ type question = {
 }
 
 function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
-
-    const tourInitialState: Tour = {
-        _id: '0',
-        name: '',
-        duration: 0,
-        budget: [],
-        expenses: [],
-        background: {
-            r: 0,
-            g: 0,
-            b: 0
-        }
-    }
 
     const questionsInitialState = [
         {
@@ -188,9 +176,6 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
         showLoadingToast();
 
         //sends the new tour to DB
-        if (tour === tourInitialState) {
-            showErrorToast();
-        }
         const newTour = await dispatch(createNewTour(tour));
         if (newTour) {
             showSuccessToast();
