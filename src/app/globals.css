@@ -20,6 +20,10 @@ body {
   
 }
 
+button {
+  @apply active:scale-95 transition-all duration-75 cursor-pointer select-none
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
