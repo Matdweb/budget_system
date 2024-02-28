@@ -33,6 +33,18 @@ function Page({ params }: { params: { tour_id: string } }) {
         setShowAnalysis(!showAnalysis);
     }
 
+    const sumTotalBudget = () => {
+        return currentTour?.budget.reduce((accumalator, currentValue) => {
+            return accumalator + currentValue;
+        }, 0) || 0;
+    }
+
+    const sumTotalExpenses = () => {
+        return currentTour?.expenses.reduce((accumalator, currentValue) => {
+            return accumalator + currentValue;
+        }, 0) || 0;
+    }
+
     const menuOptions = [
         {
             id: 0,
@@ -127,7 +139,11 @@ function Page({ params }: { params: { tour_id: string } }) {
                                 })
                             }
                             {
-                                showAnalysis && <BudgetTable />
+                                showAnalysis &&
+                                <BudgetTable
+                                    totalBudget={sumTotalBudget()}
+                                    totalExpenses={sumTotalExpenses()}
+                                />
                             }
                         </section>
                     </>
