@@ -36,13 +36,13 @@ function Page({ params }: { params: { tour_id: string } }) {
     const sumTotalBudget = () => {
         return currentTour?.budget.reduce((accumalator, currentValue) => {
             return accumalator + currentValue;
-        }, 0) || 0;
+        }, 0).toFixed(2) || 0;
     }
 
     const sumTotalExpenses = () => {
         return currentTour?.expenses.reduce((accumalator, currentValue) => {
             return accumalator + currentValue;
-        }, 0) || 0;
+        }, 0).toFixed(2) || 0;
     }
 
     const menuOptions = [
