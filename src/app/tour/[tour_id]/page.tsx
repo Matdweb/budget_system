@@ -1,17 +1,35 @@
 'use client'
+import { useState, useRef } from "react";
 import { useAppSelector } from "@/redux/hooks";
-import { Heading, Text } from "@chakra-ui/react";
+import { Heading, Text, useToast } from "@chakra-ui/react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useRouter } from "next/navigation";
 import BudgetTable from "@/components/BudgetTable";
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    Button,
+    Input,
+    InputGroup,
+    InputLeftElement,
+    useDisclosure
+} from '@chakra-ui/react'
 import 'animate.css'
-import { useState } from "react";
 
 function Page({ params }: { params: { tour_id: string } }) {
     const tours = useAppSelector(state => state.toursReducer.tours);
     const isLoading = useAppSelector(state => state.toursReducer.isLoading);
     const [showAnalysis, setShowAnalysis] = useState<boolean>(false);
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const input = useRef<null | HTMLInputElement>(null);
+    const toast = useToast();
 
     const router = useRouter();
 
@@ -25,8 +43,22 @@ function Page({ params }: { params: { tour_id: string } }) {
         router.push('/');
     }
 
-    const registerNewExpenses = () => {
+    const handleRegisterNewExpenses = () => {
+        if ((currentTour?.expenses.length || 0) <= (currentTour?.duration || 0)) {
+            onOpen();
+        } else {
+            toast({
+                title: 'Error al registrar gasto',
+                description: "Ya no se pueden registrar mas gastos",
+                status: 'error',
+                duration: 7000,
+                isClosable: true,
+            })
+        }
+    }
 
+    const registerNewExpenses = () => {
+        console.log(input.current?.value);
     }
 
     const toggleShowAnalysis = () => {
@@ -34,15 +66,15 @@ function Page({ params }: { params: { tour_id: string } }) {
     }
 
     const sumTotalBudget = () => {
-        return currentTour?.budget.reduce((accumalator, currentValue) => {
+        return parseFloat(currentTour?.budget.reduce((accumalator, currentValue) => {
             return accumalator + currentValue;
-        }, 0).toFixed(2) || 0;
+        }, 0).toFixed(2) || '0');
     }
 
     const sumTotalExpenses = () => {
-        return currentTour?.expenses.reduce((accumalator, currentValue) => {
+        return parseFloat(currentTour?.expenses.reduce((accumalator, currentValue) => {
             return accumalator + currentValue;
-        }, 0).toFixed(2) || 0;
+        }, 0).toFixed(2) || '0');
     }
 
     const menuOptions = [
@@ -58,7 +90,7 @@ function Page({ params }: { params: { tour_id: string } }) {
             className: 'grow',
             text: 'Registrar nuevo día',
             icon: null,
-            onclick: registerNewExpenses,
+            onclick: handleRegisterNewExpenses,
         },
         {
             id: 2,
@@ -146,6 +178,37 @@ function Page({ params }: { params: { tour_id: string } }) {
                                 />
                             }
                         </section>
+                        <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} isCentered>
+                            <ModalOverlay />
+                            <ModalContent>
+                                <ModalHeader>Ingrese los gastos del día {(currentTour?.expenses.length || 0) + 1}</ModalHeader>
+                                <ModalCloseButton />
+                                <ModalBody pb={6}>
+                                    <InputGroup>
+                                        <InputLeftElement
+                                            pointerEvents='none'
+                                            height='100%'
+                                            color='gray.300'
+                                            fontSize='1.5em'
+                                        >
+                                            $
+                                        </InputLeftElement>
+                                        <Input
+                                            placeholder={`Gastos ${(currentTour?.expenses.length || 0) + 1}`}
+                                            size='lg'
+                                            colorScheme="orange"
+                                            ref={input}
+                                        />
+                                    </InputGroup>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button onClick={onClose} mr={3}>Cancelar</Button>
+                                    <Button colorScheme='orange' onClick={registerNewExpenses}>
+                                        Registrar
+                                    </Button>
+                                </ModalFooter>
+                            </ModalContent>
+                        </Modal>
                     </>
                     :
                     <LoadingSpinner />
