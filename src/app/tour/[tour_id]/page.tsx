@@ -94,7 +94,8 @@ function Page({ params }: { params: { tour_id: string } }) {
         },
         {
             id: 2,
-            className: 'mt-3 shrink-0 grow',
+            className: `mt-3 shrink-0 grow animate__animated ${showAnalysis ? `animate__flipInX` : ``}`,
+            style: showAnalysis ? { background: rgba, color: '#fff' } : {},
             text: 'Mostrar analisis',
             icon: null,
             onclick: toggleShowAnalysis,
@@ -120,7 +121,7 @@ function Page({ params }: { params: { tour_id: string } }) {
                                     <button
                                         key={option.id}
                                         className={`p-4 flex justify-center items-center rounded-lg border-2 ${option.className}`}
-                                        style={{ borderColor: rgba }}
+                                        style={{ borderColor: rgba, ...option.style }}
                                         onClick={option.onclick}
                                     >
                                         {option.text &&
