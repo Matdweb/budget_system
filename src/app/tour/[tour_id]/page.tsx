@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef } from "react";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { addExpenses } from "@/redux/features/toursSlice";
 import { Heading, Text, useToast } from "@chakra-ui/react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -31,6 +32,8 @@ function Page({ params }: { params: { tour_id: string } }) {
     const input = useRef<null | HTMLInputElement>(null);
     const toast = useToast();
 
+    const dispatch = useAppDispatch();
+
     const router = useRouter();
 
     const currentTour = tours.find((tour) => {
@@ -57,8 +60,36 @@ function Page({ params }: { params: { tour_id: string } }) {
         }
     }
 
-    const registerNewExpenses = () => {
-        console.log(input.current?.value);
+    const registerNewExpenses = async () => {
+        const value = input.current?.value;
+        if (value) {
+            const expenses = parseFloat(value || '0');
+            const promise = dispatch(addExpenses({ tour_id: params.tour_id, expenses }));
+
+            onClose();
+
+            toast.promise(promise, {
+                success: { title: 'Exito :)', description: '¡Nuevo gasto agregado!' },
+                error: { title: 'Error :(', description: 'No se pudo agregar el gasto' },
+                loading: { title: 'Un momento...', description: 'La paciencia es una virtud' },
+            });
+        } else {
+            handleInputError();
+        }
+    }
+
+    const handleInputError = () => {
+        if (input.current) {
+            const currentInput = input.current;
+            currentInput.classList.add('animate__headShake');
+            currentInput.style.outline = '2px solid red';
+            setTimeout(() => {
+                currentInput.classList.remove('animate__headShake');
+                currentInput.onfocus = () => {
+                    currentInput.style.outline = '';
+                }
+            }, 1000);
+        }
     }
 
     const toggleShowAnalysis = () => {
@@ -135,7 +166,7 @@ function Page({ params }: { params: { tour_id: string } }) {
                                 currentTour?.budget.map((budget, i) => {
                                     const currentExpenses = currentTour.expenses[i];
                                     const exceded = budget < currentExpenses;
-                                    const difference = exceded ? currentExpenses - budget : budget - currentExpenses || 0;
+                                    const difference = ((exceded ? currentExpenses - budget : budget - currentExpenses) || 0).toFixed(2);
                                     return (
                                         <article className='w-full animate__animated animate__slideInLeft' key={i}>
                                             <div
@@ -158,10 +189,10 @@ function Page({ params }: { params: { tour_id: string } }) {
                                                         showAnalysis &&
                                                         <div className='w-full flex justify-end items-start'>
                                                             <span
-                                                                className='relative bottom-7 right-2 w-36 px-3 py-2 flex justify-center items-center rounded-xl text-white outline outline-2 outline-white outline-offset-[-7px]'
+                                                                className='relative bottom-7 right-2 w-44 px-3 py-2 flex justify-center items-center rounded-xl text-white outline outline-2 outline-white outline-offset-[-7px]'
                                                                 style={{ background: `${exceded ? 'red' : 'green'}` }}
                                                             >
-                                                                Sobrante: ${difference}
+                                                                {exceded ? 'Excedente' : 'Sobrante'}: ${difference}
                                                             </span>
                                                         </div>
                                                     }
@@ -195,6 +226,7 @@ function Page({ params }: { params: { tour_id: string } }) {
                                             $
                                         </InputLeftElement>
                                         <Input
+                                            className='animate__animated'
                                             placeholder={`Gastos ${(currentTour?.expenses.length || 0) + 1}`}
                                             size='lg'
                                             colorScheme="orange"
