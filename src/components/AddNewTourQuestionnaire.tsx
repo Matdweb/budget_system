@@ -173,14 +173,16 @@ function AddNewTourQuestionnaire({ isOpen, onClose }: Props) {
 
     const handleClose = async () => {
         onClose();
-        showLoadingToast();
-
-        //sends the new tour to DB
-        const newTour = await dispatch(createNewTour(tour));
-        if (newTour) {
-            showSuccessToast();
-        } else {
-            showErrorToast();
+        
+        if (tour.duration > 0) {
+            showLoadingToast();
+            //sends the new tour to DB
+            const newTour = await dispatch(createNewTour(tour));
+            if (newTour) {
+                showSuccessToast();
+            } else {
+                showErrorToast();
+            }
         }
     }
 
