@@ -73,6 +73,24 @@ export const addExpenses = createAsyncThunk('tours/addExpenses',
             console.log(e);
             return null;
         }
+    });
+
+export const deleteTour = createAsyncThunk('tours/deleteTour',
+    async (tour_id: string) => {
+        try {
+            const response = await fetch(`/api/tours/${tour_id}/delete`);
+
+            const { status }: { status: number } = await response.json();
+            if (status === 200) {
+                return tour_id;
+            } else {
+                return null;
+            }
+
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     })
 
 const toursSlice = createSlice({
@@ -128,6 +146,16 @@ const toursSlice = createSlice({
         });
 
         builder.addCase(addExpenses.rejected, (state) => {
+            state.error = true;
+        });
+
+        builder.addCase(deleteTour.fulfilled, (state, { payload }: { payload: string | null }) => {
+            if (payload) {
+                state.tours = state.tours.filter(tour => tour._id !== payload)
+            }
+        });
+
+        builder.addCase(deleteTour.rejected, (state) => {
             state.error = true;
         });
     },
