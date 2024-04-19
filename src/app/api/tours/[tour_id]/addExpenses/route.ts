@@ -21,7 +21,7 @@ export async function POST(
             {
                 status: 200,
                 statusText: 'Expenses added succesfully',
-                createdTour: tour
+                editedTour: tour
             }
         );
 
@@ -31,7 +31,7 @@ export async function POST(
             {
                 status: 400,
                 statusText: 'There was an error adding expenses to the tour',
-                createdTour: null
+                editedTour: null
             }
         );
     }
