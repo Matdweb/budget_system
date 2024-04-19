@@ -52,6 +52,29 @@ export const createNewTour = createAsyncThunk('tours/createNewTour',
         }
     })
 
+export const addExpenses = createAsyncThunk('tours/addExpenses',
+    async ({ tour_id, expenses }: { tour_id: string, expenses: number }) => {
+        try {
+
+            const response = await fetch(`/api/tours/${tour_id}/addExpenses`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ expenses })
+            });
+
+            const { status }: { status: number } = await response.json();
+            if (status === 200) {
+                return { tour_id, expenses };
+            } else {
+                return null;
+            }
+
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+    })
+
 const toursSlice = createSlice({
     name: 'tours',
     initialState,
@@ -87,6 +110,25 @@ const toursSlice = createSlice({
         builder.addCase(createNewTour.rejected, (state) => {
             state.error = true;
             state.isLoading = false;
+        });
+
+        builder.addCase(addExpenses.fulfilled, (state, { payload }: { payload: { tour_id: string, expenses: number } | null }) => {
+            if (payload) {
+                state.tours = state.tours.map((tour) => {
+                    if (tour._id === payload.tour_id) {
+                        return {
+                            ...tour,
+                            expenses: [...tour.expenses, payload.expenses]
+                        }
+                    } else {
+                        return tour;
+                    }
+                })
+            }
+        });
+
+        builder.addCase(addExpenses.rejected, (state) => {
+            state.error = true;
         });
     },
 });
