@@ -38,7 +38,7 @@ function BudgetTable({ totalBudget, totalExpenses }: Props) {
                     </Tr>
                     <Tr className={`${budgetExceded ? 'text-[red]' : 'text-[green]'}`}>
                         <Td>{budgetExceded ? 'Saldo que le deben: ' : 'Saldo ya pago: '}</Td>
-                        <Td isNumeric>${BudgetAndExpensesDifference()}</Td>
+                        <Td isNumeric>${BudgetAndExpensesDifference().toFixed(2)}</Td>
                     </Tr>
                 </Tbody>
             </Table>
