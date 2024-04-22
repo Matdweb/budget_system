@@ -66,7 +66,7 @@ function BudgetTable({ totalBudget, totalExpenses }: Props) {
                     </h2>
                     <AccordionPanel pb={4}>
                         {budgetExceded ?
-                            `Este monto representa que el presupuesto no ha alcanzado y la empresa Amerik Adventure le tiene que pagar $${difference} + valor de la gira` :
+                            `Este monto representa que el presupuesto no ha alcanzado y la empresa Amerik Venture le tiene que pagar $${difference} + valor de la gira` :
                             `Este monto representa que el presupuesto si ha alcanazado y del pago completo por esta gira ya estarían pagos $${difference}`}
                     </AccordionPanel>
                 </AccordionItem>
