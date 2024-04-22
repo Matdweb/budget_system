@@ -167,20 +167,21 @@ function Page({ params }: { params: { tour_id: string } }) {
                                     const currentExpenses = currentTour.expenses[i];
                                     const exceded = budget < currentExpenses;
                                     const difference = ((exceded ? currentExpenses - budget : budget - currentExpenses) || 0).toFixed(2);
+                                    const lastElement = i === currentTour.budget.length - 1;
                                     return (
                                         <article className='w-full animate__animated animate__slideInLeft' key={i}>
                                             <div
-                                                className='min-w-64 w-full h-32 mt-12 flex justify-center items-start rounded-lg active:scale-95 transition-all duration-75 cursor-pointer select-none group'
+                                                className={`min-w-64 w-full ${lastElement ? `h-40` : `h-32`} mt-12 flex justify-center items-start rounded-lg active:scale-95 transition-all duration-75 cursor-pointer select-none group`}
                                                 style={{ boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px' }}
                                             >
                                                 <div
-                                                    className='w-3 h-full rounded-l-lg'
+                                                    className={`w-3 h-full rounded-l-lg`}
                                                     style={{ background: `${exceded ? 'red' : 'green'}` }}
                                                 ></div>
                                                 <div className='grow'>
                                                     <div className='w-full p-5 pt-3 pb-0'>
-                                                        <Heading as='h4' size='xl'>
-                                                            {i === currentTour.budget.length - 1 ? `Presupuesto Extra` : `Día ${i + 1}`}
+                                                        <Heading as='h4' size='xl' className=''>
+                                                            {lastElement ? `Presupuesto Extra` : `Día ${i + 1}`}
                                                         </Heading>
                                                         <Text fontSize='lg'>Presupuesto: ${budget}</Text>
                                                         <Text fontSize='lg'>Gasto: ${currentExpenses || 0}</Text>
@@ -189,7 +190,7 @@ function Page({ params }: { params: { tour_id: string } }) {
                                                         showAnalysis &&
                                                         <div className='w-full flex justify-end items-start'>
                                                             <span
-                                                                className='relative bottom-7 right-2 w-44 px-3 py-2 flex justify-center items-center rounded-xl text-white outline outline-2 outline-white outline-offset-[-7px]'
+                                                                className='relative right-2 w-44 px-3 py-2 flex justify-center items-center rounded-xl text-white outline outline-2 outline-white outline-offset-[-7px]'
                                                                 style={{ background: `${exceded ? 'red' : 'green'}` }}
                                                             >
                                                                 {exceded ? 'Excedente' : 'Sobrante'}: ${difference}
