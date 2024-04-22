@@ -67,7 +67,6 @@ function TourBox({ id, name, background }: Props) {
                         <DeleteIcon
                             color='white'
                             boxSize={8}
-                            className='opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out'
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onOpen();
